@@ -1,11 +1,13 @@
 from pydantic import BaseModel
+from datetime import date
 
 class EmployeeCreate(BaseModel):
-    emp_id: str
-    name: str
-    role: str
+    employee_id: str
+    full_name: str
+    email: str
+    department: str
 
 class AttendanceCreate(BaseModel):
-    emp_id: str
-    date: str       # or date type
+    employee_id: str
+    date: date
     status: str
