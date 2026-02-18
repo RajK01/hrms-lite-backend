@@ -6,7 +6,7 @@ HRMS Lite is a streamlined internal tool designed for HR Administrators to manag
 ---
 
 ## 🔗 Live Links
-- **Live Demo:** [Insert Vercel URL Here]
+- **Live Demo:** [[Insert Vercel URL Here](https://hrms-lite-backend-ten.vercel.app/)]
 - **Backend API Docs:** [Insert Render URL Here]/docs
 - **Frontend Repository:** [Insert Link]
 - **Backend Repository:** [Insert Link]
