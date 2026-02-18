@@ -8,6 +8,13 @@ from backend.schemas import EmployeeCreate, AttendanceCreate
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_db():
     db = SessionLocal()
@@ -54,4 +61,5 @@ def add_attendance(att: AttendanceCreate, db: Session = Depends(get_db)):
 @app.get("/attendance/{emp_id}")
 def get_attendance(emp_id: str, db: Session = Depends(get_db)):
     return crud.get_attendance(db, emp_id)
+
 
