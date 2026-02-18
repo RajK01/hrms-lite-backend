@@ -1,21 +1,23 @@
 from sqlalchemy.orm import Session
-from schemas import EmployeeCreate, AttendanceCreate
-from backend import models
-from backend.database import SessionLocal
 from backend.models import Employee, Attendance
+from backend.schemas import EmployeeCreate, AttendanceCreate
 
-def create_employee(db: Session, emp: EmployeeCreate):
-    employee = Employee(**emp.dict())
-    db.add(employee)
+def create_employee(db: Session, employee: EmployeeCreate):
+    db_emp = Employee(
+        emp_id=employee.emp_id,
+        name=employee.name,
+        department=employee.department
+    )
+    db.add(db_emp)
     db.commit()
-    db.refresh(employee)
-    return employee
+    db.refresh(db_emp)
+    return db_emp
 
 def get_employees(db: Session):
     return db.query(Employee).all()
 
 def delete_employee(db: Session, emp_id: str):
-    emp = db.query(Employee).filter(Employee.employee_id == emp_id).first()
+    emp = db.query(Employee).filter(Employee.emp_id == emp_id).first()
     if emp:
         db.delete(emp)
         db.commit()
@@ -23,12 +25,15 @@ def delete_employee(db: Session, emp_id: str):
     return False
 
 def mark_attendance(db: Session, att: AttendanceCreate):
-    record = Attendance(**att.dict())
-    db.add(record)
+    db_att = Attendance(
+        emp_id=att.emp_id,
+        date=att.date,
+        status=att.status
+    )
+    db.add(db_att)
     db.commit()
-    return record
+    db.refresh(db_att)
+    return db_att
 
 def get_attendance(db: Session, emp_id: str):
-    return db.query(Attendance).filter(Attendance.employee_id == emp_id).all()
-
-
+    return db.query(Attendance).filter(Attendance.emp_id == emp_id).all()
