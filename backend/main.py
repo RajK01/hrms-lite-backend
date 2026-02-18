@@ -20,14 +20,9 @@ def get_db():
 def home():
     return {"message": "HRMS Backend Running"}
 
-@app.post("/employees")
-def add_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
-    return crud.create_employee(db, employee)
-
-@app.get("/employees")
-def list_employees(db: Session = Depends(get_db)):
-    return crud.get_employees(db)
-
+# ---------------------------------------------------
+# 📌 DELETE FIRST — Before GET routes to avoid shadowing
+# ---------------------------------------------------
 @app.delete("/employees/{emp_id}")
 def delete_employee(emp_id: str, db: Session = Depends(get_db)):
     result = crud.delete_employee(db, emp_id)
@@ -35,6 +30,23 @@ def delete_employee(emp_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Employee not found")
     return {"message": "Deleted"}
 
+# ---------------------------------------------------
+# 📌 CREATE EMPLOYEE
+# ---------------------------------------------------
+@app.post("/employees")
+def add_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
+    return crud.create_employee(db, employee)
+
+# ---------------------------------------------------
+# 📌 LIST EMPLOYEES
+# ---------------------------------------------------
+@app.get("/employees")
+def list_employees(db: Session = Depends(get_db)):
+    return crud.get_employees(db)
+
+# ---------------------------------------------------
+# 📌 ATTENDANCE ROUTES
+# ---------------------------------------------------
 @app.post("/attendance")
 def add_attendance(att: AttendanceCreate, db: Session = Depends(get_db)):
     return crud.mark_attendance(db, att)
