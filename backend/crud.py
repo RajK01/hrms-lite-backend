@@ -4,8 +4,9 @@ from backend.schemas import EmployeeCreate, AttendanceCreate
 
 def create_employee(db: Session, employee: EmployeeCreate):
     db_emp = Employee(
-        emp_id=employee.emp_id,
-        name=employee.name,
+        employee_id=employee.employee_id,
+        full_name=employee.full_name,
+        email=employee.email,
         department=employee.department
     )
     db.add(db_emp)
@@ -13,20 +14,23 @@ def create_employee(db: Session, employee: EmployeeCreate):
     db.refresh(db_emp)
     return db_emp
 
+
 def get_employees(db: Session):
     return db.query(Employee).all()
 
+
 def delete_employee(db: Session, emp_id: str):
-    emp = db.query(Employee).filter(Employee.emp_id == emp_id).first()
+    emp = db.query(Employee).filter(Employee.employee_id == emp_id).first()
     if emp:
         db.delete(emp)
         db.commit()
         return True
     return False
 
+
 def mark_attendance(db: Session, att: AttendanceCreate):
     db_att = Attendance(
-        emp_id=att.emp_id,
+        employee_id=att.employee_id,
         date=att.date,
         status=att.status
     )
@@ -35,5 +39,6 @@ def mark_attendance(db: Session, att: AttendanceCreate):
     db.refresh(db_att)
     return db_att
 
+
 def get_attendance(db: Session, emp_id: str):
-    return db.query(Attendance).filter(Attendance.emp_id == emp_id).all()
+    return db.query(Attendance).filter(Attendance.employee_id == emp_id).all()
