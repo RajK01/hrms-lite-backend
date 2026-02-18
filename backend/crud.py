@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from models import Employee, Attendance
 from schemas import EmployeeCreate, AttendanceCreate
+from backend import models
+from backend.database import SessionLocal
 
 def create_employee(db: Session, emp: EmployeeCreate):
     employee = Employee(**emp.dict())
@@ -28,3 +30,4 @@ def mark_attendance(db: Session, att: AttendanceCreate):
 
 def get_attendance(db: Session, emp_id: str):
     return db.query(Attendance).filter(Attendance.employee_id == emp_id).all()
+
