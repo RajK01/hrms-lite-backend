@@ -18,3 +18,4 @@ class Attendance(Base):
     date = Column(Date)
     status = Column(String)
 
+
