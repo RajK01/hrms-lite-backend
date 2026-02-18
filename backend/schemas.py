@@ -1,14 +1,11 @@
-from pydantic import BaseModel, EmailStr
-from backend.models import Employee
+from pydantic import BaseModel
 
 class EmployeeCreate(BaseModel):
-    employee_id: str
-    full_name: str
-    email: EmailStr
-    department: str
+    emp_id: str
+    name: str
+    role: str
 
 class AttendanceCreate(BaseModel):
-    employee_id: str
-    date: date
+    emp_id: str
+    date: str       # or date type
     status: str
-
