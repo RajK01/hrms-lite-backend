@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from fastapi.middleware.cors import CORSMiddleware  # <--- Add this
 from backend.database import SessionLocal, engine, Base
 from backend import models, crud
 from backend.schemas import EmployeeCreate, AttendanceCreate
@@ -54,3 +54,4 @@ def add_attendance(att: AttendanceCreate, db: Session = Depends(get_db)):
 @app.get("/attendance/{emp_id}")
 def get_attendance(emp_id: str, db: Session = Depends(get_db)):
     return crud.get_attendance(db, emp_id)
+
