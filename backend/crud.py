@@ -1,8 +1,20 @@
+from fastapi import HTTPException # Add this import at the top
 from sqlalchemy.orm import Session
 from backend.models import Employee, Attendance
 from backend.schemas import EmployeeCreate, AttendanceCreate
 
 def create_employee(db: Session, employee: EmployeeCreate):
+    # 1. Check if ID already exists
+    existing_id = db.query(Employee).filter(Employee.employee_id == employee.employee_id).first()
+    if existing_id:
+        raise HTTPException(status_code=400, detail="Employee ID already exists")
+
+    # 2. Check if Email already exists
+    existing_email = db.query(Employee).filter(Employee.email == employee.email).first()
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    # 3. If everything is fine, save it
     db_emp = Employee(
         employee_id=employee.employee_id,
         full_name=employee.full_name,
@@ -42,3 +54,4 @@ def mark_attendance(db: Session, att: AttendanceCreate):
 
 def get_attendance(db: Session, emp_id: str):
     return db.query(Attendance).filter(Attendance.employee_id == emp_id).all()
+
