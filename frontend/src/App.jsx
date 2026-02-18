@@ -4,24 +4,36 @@ function App() {
   const [employee, setEmployee] = useState({ employee_id: "", full_name: "", email: "", department: "" });
   const [attendance, setAttendance] = useState({ employee_id: "", status: "Present", date: new Date().toISOString().split('T')[0] });
   const [employeeList, setEmployeeList] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [attendanceList, setAttendanceList] = useState([]); // individual attendance records
 
+  // --- Fetch all employees ---
   const fetchEmployees = async () => {
     try {
       const res = await fetch("https://hrms-lite-back.onrender.com/employees");
       const data = await res.json();
       setEmployeeList(data);
-    } catch (err) { console.error("Fetch failed", err); }
+    } catch (err) {
+      console.error("Fetch employees failed", err);
+    }
   };
 
-  const fetchAllAttendance = async () => {
+  // --- Fetch individual attendance ---
+  const fetchAttendance = async () => {
     try {
       const res = await fetch("https://hrms-lite-back.onrender.com/attendance");
       const data = await res.json();
-      setHistory(data);
-    } catch (err) { console.error("Attendance fetch failed", err); }
+      // Attach employee info for display
+      const attendanceWithEmp = data.map(a => {
+        const emp = employeeList.find(e => e.employee_id === a.employee_id) || {};
+        return { ...a, full_name: emp.full_name, department: emp.department };
+      });
+      setAttendanceList(attendanceWithEmp);
+    } catch (err) {
+      console.error("Fetch attendance failed", err);
+    }
   };
 
+  // --- Save employee ---
   const saveEmployee = async () => {
     if (!employee.employee_id || !employee.full_name || !employee.email) {
       alert("Please fill the required fields!");
@@ -46,41 +58,61 @@ function App() {
     }
   };
 
+  // --- Delete employee ---
   const deleteEmployee = async (id) => {
     if (window.confirm("Delete this employee?")) {
       await fetch(`https://hrms-lite-back.onrender.com/employees/${id}`, { method: "DELETE" });
       fetchEmployees();
+      fetchAttendance();
     }
   };
 
+  // --- Mark attendance ---
   const markAttendance = async () => {
-    const res = await fetch("https://hrms-lite-back.onrender.com/attendance", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(attendance),
-    });
-    if (res.ok) {
-      alert("Attendance Marked!");
-      fetchAllAttendance(); // Refresh attendance table
+    if (!attendance.employee_id) {
+      alert("Enter Employee ID!");
+      return;
+    }
+    try {
+      const res = await fetch("https://hrms-lite-back.onrender.com/attendance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(attendance),
+      });
+      if (res.ok) {
+        alert("Attendance Marked!");
+        setAttendance({ employee_id: "", status: "Present", date: new Date().toISOString().split('T')[0] });
+        fetchAttendance();
+      } else {
+        alert("Failed to mark attendance.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error marking attendance.");
     }
   };
 
   useEffect(() => {
     fetchEmployees();
-    fetchAllAttendance(); // fetch all attendance on page load
   }, []);
+
+  useEffect(() => {
+    if (employeeList.length > 0) fetchAttendance();
+  }, [employeeList]);
 
   return (
     <div style={containerStyle}>
       {/* Navbar */}
       <nav style={navStyle}>
         <div style={navContent}>
-          <h1 style={{ margin: 0, fontSize: "22px", color: "#2563eb" }}>🚀 HRMS <span style={{ fontWeight: 300, color: "#64748b" }}>Lite</span></h1>
+          <h1 style={{ margin: 0, fontSize: "22px", color: "#2563eb" }}>
+            🚀 HRMS <span style={{ fontWeight: 300, color: "#64748b" }}>Lite</span>
+          </h1>
           <div style={{ color: "#64748b", fontWeight: "500" }}>{new Date().toDateString()}</div>
         </div>
       </nav>
 
-      {/* Main Content Dashboard */}
+      {/* Dashboard */}
       <div style={dashboardWrapper}>
         <div style={contentGrid}>
 
@@ -89,10 +121,10 @@ function App() {
             <section style={cardStyle}>
               <h3 style={cardTitle}>Add New Employee</h3>
               <div style={formGroup}>
-                <input placeholder="Employee ID" value={employee.employee_id} onChange={(e) => setEmployee({ ...employee, employee_id: e.target.value })} style={inputStyle} />
-                <input placeholder="Full Name" value={employee.full_name} onChange={(e) => setEmployee({ ...employee, full_name: e.target.value })} style={inputStyle} />
-                <input placeholder="Email Address" value={employee.email} onChange={(e) => setEmployee({ ...employee, email: e.target.value })} style={inputStyle} />
-                <input placeholder="Department" value={employee.department} onChange={(e) => setEmployee({ ...employee, department: e.target.value })} style={inputStyle} />
+                <input placeholder="Employee ID" value={employee.employee_id} onChange={e => setEmployee({ ...employee, employee_id: e.target.value })} style={inputStyle} />
+                <input placeholder="Full Name" value={employee.full_name} onChange={e => setEmployee({ ...employee, full_name: e.target.value })} style={inputStyle} />
+                <input placeholder="Email Address" value={employee.email} onChange={e => setEmployee({ ...employee, email: e.target.value })} style={inputStyle} />
+                <input placeholder="Department" value={employee.department} onChange={e => setEmployee({ ...employee, department: e.target.value })} style={inputStyle} />
                 <button onClick={saveEmployee} style={primaryBtn}>Onboard Employee</button>
               </div>
             </section>
@@ -100,12 +132,12 @@ function App() {
             <section style={cardStyle}>
               <h3 style={cardTitle}>Mark Attendance</h3>
               <div style={formGroup}>
-                <input placeholder="Emp ID" value={attendance.employee_id} onChange={(e) => setAttendance({ ...attendance, employee_id: e.target.value })} style={inputStyle} />
-                <select value={attendance.status} onChange={(e) => setAttendance({ ...attendance, status: e.target.value })} style={inputStyle}>
+                <input placeholder="Emp ID" value={attendance.employee_id} onChange={e => setAttendance({ ...attendance, employee_id: e.target.value })} style={inputStyle} />
+                <select value={attendance.status} onChange={e => setAttendance({ ...attendance, status: e.target.value })} style={inputStyle}>
                   <option value="Present">✅ Present</option>
                   <option value="Absent">❌ Absent</option>
                 </select>
-                <input type="date" value={attendance.date} onChange={(e) => setAttendance({ ...attendance, date: e.target.value })} style={inputStyle} />
+                <input type="date" value={attendance.date} onChange={e => setAttendance({ ...attendance, date: e.target.value })} style={inputStyle} />
                 <button onClick={markAttendance} style={secondaryBtn}>Log Status</button>
               </div>
             </section>
@@ -113,6 +145,7 @@ function App() {
 
           {/* RIGHT COLUMN */}
           <div style={columnStyle}>
+            {/* Employee Directory */}
             <section style={cardStyle}>
               <h3 style={cardTitle}>Employee Directory</h3>
               <div style={{ overflowX: "auto" }}>
@@ -127,14 +160,14 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {employeeList.map((emp) => (
+                    {employeeList.map(emp => (
                       <tr key={emp.employee_id} style={tableRowStyle}>
                         <td style={tdStyle}>{emp.employee_id}</td>
                         <td style={tdStyle}><strong>{emp.full_name}</strong></td>
                         <td style={tdStyle}><strong>{emp.email}</strong></td>
                         <td style={tdStyle}><span style={badgeStyle}>{emp.department}</span></td>
                         <td style={tdStyle}>
-                          <button onClick={() => deleteEmployee(emp.employee_id || emp.id)} style={deleteBtn}>Delete</button>
+                          <button onClick={() => deleteEmployee(emp.employee_id)} style={deleteBtn}>Delete</button>
                         </td>
                       </tr>
                     ))}
@@ -143,33 +176,40 @@ function App() {
               </div>
             </section>
 
+            {/* Attendance Records */}
             <section style={cardStyle}>
               <h3 style={cardTitle}>Attendance Record</h3>
               <div style={{ overflowX: "auto" }}>
-                {history.length > 0 ? (
-                  <table style={tableStyle}>
-                    <thead>
-                      <tr style={tableHeaderRow}>
-                        <th style={thStyle}>Employee ID</th>
-                        <th style={thStyle}>Date</th>
-                        <th style={thStyle}>Status</th>
+                <table style={tableStyle}>
+                  <thead>
+                    <tr style={tableHeaderRow}>
+                      <th style={thStyle}>Emp ID</th>
+                      <th style={thStyle}>Name</th>
+                      <th style={thStyle}>Dept</th>
+                      <th style={thStyle}>Date</th>
+                      <th style={thStyle}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceList.length > 0 ? attendanceList.map((record, i) => (
+                      <tr key={i} style={tableRowStyle}>
+                        <td style={tdStyle}>{record.employee_id}</td>
+                        <td style={tdStyle}>{record.full_name}</td>
+                        <td style={tdStyle}>{record.department}</td>
+                        <td style={tdStyle}>{record.date}</td>
+                        <td style={{ ...tdStyle, color: record.status === "Present" ? "#10b981" : "#ef4444", fontWeight: 600 }}>
+                          {record.status}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {history.map((h, i) => (
-                        <tr key={i} style={tableRowStyle}>
-                          <td style={tdStyle}>{h.employee_id}</td>
-                          <td style={tdStyle}>{h.date}</td>
-                          <td style={{ ...tdStyle, color: h.status === 'Present' ? '#10b981' : '#ef4444', fontWeight: 600 }}>
-                            {h.status}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p style={{ fontSize: "13px", color: "#94a3b8" }}>No attendance records found.</p>
-                )}
+                    )) : (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: "center", padding: "16px", color: "#94a3b8" }}>
+                          No attendance records yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </section>
           </div>
@@ -180,7 +220,7 @@ function App() {
   );
 }
 
-// --- CSS-IN-JS STYLES (UNCHANGED) ---
+// --- CSS-IN-JS ---
 const containerStyle = { minHeight: "100vh", backgroundColor: "#f1f5f9", fontFamily: "'Inter', system-ui, sans-serif", display: "flex", flexDirection: "column" };
 const navStyle = { backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "15px 0", display: "flex", justifyContent: "center", width: "100%" };
 const columnStyle = { display: "flex", flexDirection: "column", gap: "30px" };
