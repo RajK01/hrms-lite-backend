@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date
-from database import Base
+from backend.database import Base
 
 class Employee(Base):
     __tablename__ = "employees"
@@ -17,3 +17,4 @@ class Attendance(Base):
     employee_id = Column(String)
     date = Column(Date)
     status = Column(String)
+
