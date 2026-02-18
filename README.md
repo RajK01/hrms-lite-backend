@@ -1,65 +1,67 @@
-# HRMS Lite 🚀
-### A Lightweight Human Resource Management System
+# HRMS Lite – Lightweight Human Resource Management System
 
-HRMS Lite is a streamlined internal tool designed for HR Administrators to manage employee records and track daily attendance with ease. Built with a focus on clean architecture, type safety, and responsive design.
+A streamlined, full-stack **Human Resource Management System (HRMS)** designed to help administrators manage employee records and track daily attendance efficiently.
 
 ---
 
-## 🔗 Live Links
-- **Live Demo:** https://hrms-lite-backend-ten.vercel.app/
-- **Backend API Docs:** [Insert Render URL Here]/docs
-- **Frontend Repository:** [Insert Link]
-- **Backend Repository:** [Insert Link]
+## 🚀 Live Links
+- **Live Application:** [https://hrms-lite-backend-ten.vercel.app/](https://hrms-lite-backend-ten.vercel.app/)  
+- **GitHub Repository:** [https://github.com/RajK01/hrms-lite-backend](https://github.com/RajK01/hrms-lite-backend)  
+- **Hosted Backend API:** [https://hrms-lite-back.onrender.com/](https://hrms-lite-back.onrender.com/)
+
+---
+
+## 📝 Project Overview
+**HRMS Lite** is a professional internal tool built to handle essential HR operations, focusing on:
+
+1. **Employee Management**  
+   - Register new staff  
+   - View a complete employee directory  
+   - Delete outdated or inactive records  
+
+2. **Attendance Tracking**  
+   - Mark daily employee attendance (Present/Absent)  
+   - View attendance history with trends over time  
+
+The system emphasizes a **clean UI, stable performance, and production-ready deployment**.
 
 ---
 
 ## 🛠️ Tech Stack
-
-### Frontend
-- **React (Vite):** For a blazing fast development experience and optimized builds.
-- **Tailwind CSS:** For a modern, professional, and responsive UI.
-- **Axios:** For robust API communication.
-- **React Router:** For seamless single-page navigation.
-
-### Backend
-- **FastAPI (Python):** High-performance framework with automatic Swagger documentation.
-- **SQLAlchemy:** SQL Toolkit and ORM for clean database interactions.
-- **SQLite:** Lightweight, file-based database (Perfect for Lite applications).
-- **Pydantic:** Data validation and settings management using Python type annotations.
+- **Frontend:** React.js (Vite)  
+- **Styling:** CSS-in-JS (Dashboard-centric)  
+- **Backend:** Python (FastAPI)  
+- **Database:** SQLite / SQLAlchemy  
+- **Deployment:** Vercel (Frontend) & Render (Backend)  
 
 ---
 
 ## ✨ Features
-- **Employee Management:** - Add new employees with unique IDs.
-    - View a comprehensive directory of all staff.
-    - Delete records with immediate state updates.
-- **Attendance Tracking:**
-    - Mark attendance (Present/Absent) for specific dates.
-    - View historical attendance logs per employee.
-- **Validation:** Server-side checks for duplicate IDs and valid email formats.
+- **Employee Directory:** View all employees with ID, name, email, and department  
+- **Attendance History:** Searchable logs in a tabular format  
+- **Server-Side Validation:** Email format checks and prevention of duplicate Employee IDs  
+- **Responsive Dashboard:** Professional two-column layout optimized for admin use  
 
 ---
 
-## 🚀 Local Setup Instructions
+## ⚙️ Running Locally
 
-### Backend Setup
-1. Navigate to the backend folder: `cd backend`
-2. Create a virtual environment: `python -m venv venv`
-3. Activate it: 
-   - Windows: `venv\Scripts\activate` 
-   - Mac/Linux: `source venv/bin/activate`
-4. Install dependencies: `pip install -r requirements.txt`
-5. Start the server: `uvicorn main:app --reload`
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/RajK01/hrms-lite-backend.git
+cd hrms-lite-backend
 
-### Frontend Setup
-1. Navigate to the frontend folder: `cd frontend`
-2. Install dependencies: `npm install`
-3. Create a `.env` file and add: `VITE_API_URL=http://localhost:8000`
-4. Start the app: `npm run dev`
+2️⃣ Backend Setup
+pip install -r requirements.txt
+uvicorn main:app --reload
 
----
 
-## 📝 Assumptions & Limitations
-- **Security:** As per requirements, authentication is omitted (Single Admin Use Case).
-- **Data Persistence:** Uses SQLite for zero-config setup. For high-scale production, PostgreSQL is recommended.
-- **Scope:** Focused purely on Core Employee and Attendance modules as per the 6-hour sprint goal.
+Backend available at: http://localhost:8000
+
+3️⃣ Frontend Setup
+cd frontend
+npm install
+npm run dev
+
+
+Frontend available at: http://localhost:5173
