@@ -18,29 +18,33 @@ function App() {
   };
 
   // --- Fetch individual attendance ---
-  const fetchAttendance = async () => {
+  // Fetch attendance for all employees
+const fetchAttendance = async () => {
   try {
-    const res = await fetch("https://hrms-lite-back.onrender.com/attendance");
-    const data = await res.json();
+    const allRecords = [];
 
-    // Map each attendance to include employee info
-    const attendanceWithEmp = data.map(a => {
-      const emp = employeeList.find(e => e.employee_id === a.employee_id);
-      return {
+    // Loop through all employees
+    for (let emp of employeeList) {
+      const res = await fetch(`https://hrms-lite-back.onrender.com/attendance/${emp.employee_id}`);
+      const data = await res.json();
+
+      data.forEach(a => allRecords.push({
         ...a,
-        full_name: emp ? emp.full_name : "Unknown",
-        department: emp ? emp.department : "-"
-      };
-    });
+        full_name: emp.full_name,
+        department: emp.department
+      }));
+    }
 
     // Sort by date descending
-    attendanceWithEmp.sort((x, y) => new Date(y.date) - new Date(x.date));
+    allRecords.sort((x, y) => new Date(y.date) - new Date(x.date));
 
-    setAttendanceList(attendanceWithEmp);
+    setAttendanceList(allRecords);
+
   } catch (err) {
     console.error("Fetch attendance failed", err);
   }
 };
+
 
 
   // --- Save employee ---
