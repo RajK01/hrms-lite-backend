@@ -52,9 +52,15 @@ git clone https://github.com/RajK01/hrms-lite-backend.git
 cd hrms-lite-backend
 
 2️⃣ Backend Setup
+⭐ STEP 2 — BACKEND SETUP (FastAPI)
+cd backend
+
+python -m venv venv
+venv\Scripts\activate
+pip install fastapi uvicorn sqlalchemy pydantic email-validator
+
 pip install -r requirements.txt
 uvicorn main:app --reload
-
 
 Backend available at: http://localhost:8000
 
