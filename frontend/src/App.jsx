@@ -19,19 +19,29 @@ function App() {
 
   // --- Fetch individual attendance ---
   const fetchAttendance = async () => {
-    try {
-      const res = await fetch("https://hrms-lite-back.onrender.com/attendance");
-      const data = await res.json();
-      // Attach employee info for display
-      const attendanceWithEmp = data.map(a => {
-        const emp = employeeList.find(e => e.employee_id === a.employee_id) || {};
-        return { ...a, full_name: emp.full_name, department: emp.department };
-      });
-      setAttendanceList(attendanceWithEmp);
-    } catch (err) {
-      console.error("Fetch attendance failed", err);
-    }
-  };
+  try {
+    const res = await fetch("https://hrms-lite-back.onrender.com/attendance");
+    const data = await res.json();
+
+    // Map each attendance to include employee info
+    const attendanceWithEmp = data.map(a => {
+      const emp = employeeList.find(e => e.employee_id === a.employee_id);
+      return {
+        ...a,
+        full_name: emp ? emp.full_name : "Unknown",
+        department: emp ? emp.department : "-"
+      };
+    });
+
+    // Sort by date descending
+    attendanceWithEmp.sort((x, y) => new Date(y.date) - new Date(x.date));
+
+    setAttendanceList(attendanceWithEmp);
+  } catch (err) {
+    console.error("Fetch attendance failed", err);
+  }
+};
+
 
   // --- Save employee ---
   const saveEmployee = async () => {
@@ -69,28 +79,43 @@ function App() {
 
   // --- Mark attendance ---
   const markAttendance = async () => {
-    if (!attendance.employee_id) {
-      alert("Enter Employee ID!");
-      return;
+  if (!attendance.employee_id) {
+    alert("Enter Employee ID!");
+    return;
+  }
+  try {
+    const res = await fetch("https://hrms-lite-back.onrender.com/attendance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(attendance),
+    });
+
+    if (res.ok) {
+      const newRecord = await res.json();  // get the newly created attendance
+
+      // Merge with employee info immediately
+      const emp = employeeList.find(e => e.employee_id === newRecord.employee_id);
+      const recordWithEmp = {
+        ...newRecord,
+        full_name: emp ? emp.full_name : "Unknown",
+        department: emp ? emp.department : "-"
+      };
+
+      // Update table without waiting for another fetch
+      setAttendanceList(prev => [recordWithEmp, ...prev]);
+
+      // Reset input
+      setAttendance({ employee_id: "", status: "Present", date: new Date().toISOString().split('T')[0] });
+      alert("Attendance Marked!");
+    } else {
+      alert("Failed to mark attendance.");
     }
-    try {
-      const res = await fetch("https://hrms-lite-back.onrender.com/attendance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(attendance),
-      });
-      if (res.ok) {
-        alert("Attendance Marked!");
-        setAttendance({ employee_id: "", status: "Present", date: new Date().toISOString().split('T')[0] });
-        fetchAttendance();
-      } else {
-        alert("Failed to mark attendance.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error marking attendance.");
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Error marking attendance.");
+  }
+};
+
 
   useEffect(() => {
     fetchEmployees();
