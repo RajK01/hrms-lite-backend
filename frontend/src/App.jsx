@@ -18,12 +18,10 @@ function App() {
   };
 
   // --- Fetch individual attendance ---
-  // Fetch attendance for all employees
-const fetchAttendance = async () => {
+ const fetchAttendance = async () => {
   try {
     const allRecords = [];
 
-    // Loop through all employees
     for (let emp of employeeList) {
       const res = await fetch(`https://hrms-lite-back.onrender.com/attendance/${emp.employee_id}`);
       const data = await res.json();
@@ -35,15 +33,24 @@ const fetchAttendance = async () => {
       }));
     }
 
-    // Sort by date descending
-    allRecords.sort((x, y) => new Date(y.date) - new Date(x.date));
+    // Remove duplicates: only keep latest per employee per date
+    const uniqueMap = {};
+    allRecords.forEach(record => {
+      const key = record.employee_id + "_" + record.date;
+      uniqueMap[key] = record; // overwrites older duplicates
+    });
 
-    setAttendanceList(allRecords);
+    const uniqueRecords = Object.values(uniqueMap);
+    // Sort by date descending
+    uniqueRecords.sort((x, y) => new Date(y.date) - new Date(x.date));
+
+    setAttendanceList(uniqueRecords);
 
   } catch (err) {
     console.error("Fetch attendance failed", err);
   }
 };
+
 
 
 
@@ -95,9 +102,8 @@ const fetchAttendance = async () => {
     });
 
     if (res.ok) {
-      const newRecord = await res.json();  // get the newly created attendance
+      const newRecord = await res.json();
 
-      // Merge with employee info immediately
       const emp = employeeList.find(e => e.employee_id === newRecord.employee_id);
       const recordWithEmp = {
         ...newRecord,
@@ -105,10 +111,14 @@ const fetchAttendance = async () => {
         department: emp ? emp.department : "-"
       };
 
-      // Update table without waiting for another fetch
-      setAttendanceList(prev => [recordWithEmp, ...prev]);
+      setAttendanceList(prev => {
+        // Remove any existing record for same employee & date
+        const filtered = prev.filter(
+          r => !(r.employee_id === recordWithEmp.employee_id && r.date === recordWithEmp.date)
+        );
+        return [recordWithEmp, ...filtered];
+      });
 
-      // Reset input
       setAttendance({ employee_id: "", status: "Present", date: new Date().toISOString().split('T')[0] });
       alert("Attendance Marked!");
     } else {
@@ -119,6 +129,7 @@ const fetchAttendance = async () => {
     alert("Error marking attendance.");
   }
 };
+
 
 
   useEffect(() => {
