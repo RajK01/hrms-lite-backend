@@ -63,5 +63,12 @@ cd frontend
 npm install
 npm run dev
 
-
 Frontend available at: http://localhost:5173
+
+```
+## Assumptions & Limitations
+   - Single Administrator: The system is designed for use by a single admin; authentication and multi-user roles are currently out of scope.
+   - Manual ID Management: Unique Employee IDs are expected to be managed and entered manually by the administrator.
+   - Local Persistence: Data is stored using a local SQLite database file, which is ideal for lightweight management but not designed for high-concurrency enterprise use.
+   - Attendance Frequency: The system assumes one attendance log per employee per calendar day.
+   - Internet Connectivity: As the frontend and backend are hosted on separate platforms (Vercel and Render), a stable internet connection is required for the live version to sync data.
