@@ -1,17 +1,17 @@
-# HRMS Lite – Lightweight Human Resource Management System
+## HRMS Lite – Lightweight Human Resource Management System
 
 A streamlined, full-stack **Human Resource Management System (HRMS)** designed to help administrators manage employee records and track daily attendance efficiently.
 
 ---
 
-## 🚀 Live Links
+### 🚀 Live Links
 - **Live Application:** [https://hrms-lite-backend-ten.vercel.app/](https://hrms-lite-backend-ten.vercel.app/)  
 - **GitHub Repository:** [https://github.com/RajK01/hrms-lite-backend](https://github.com/RajK01/hrms-lite-backend)  
 - **Hosted Backend API:** [https://hrms-lite-back.onrender.com/](https://hrms-lite-back.onrender.com/)
 
 ---
 
-## 📝 Project Overview
+### 📝 Project Overview
 **HRMS Lite** is a professional internal tool built to handle essential HR operations, focusing on:
 
 1. **Employee Management**  
@@ -27,7 +27,7 @@ The system emphasizes a **clean UI, stable performance, and production-ready dep
 
 ---
 
-## 🛠️ Tech Stack
+### 🛠️ Tech Stack
 - **Frontend:** React.js (Vite)  
 - **Styling:** CSS-in-JS (Dashboard-centric)  
 - **Backend:** Python (FastAPI)  
@@ -36,7 +36,7 @@ The system emphasizes a **clean UI, stable performance, and production-ready dep
 
 ---
 
-## ✨ Features
+### ✨ Features
 - **Employee Directory:** View all employees with ID, name, email, and department  
 - **Attendance History:** Searchable logs in a tabular format  
 - **Server-Side Validation:** Email format checks and prevention of duplicate Employee IDs  
@@ -44,9 +44,9 @@ The system emphasizes a **clean UI, stable performance, and production-ready dep
 
 ---
 
-## ⚙️ Running Locally
+### ⚙️ Running Locally
 
-### 1️⃣ Clone the Repository
+#### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/RajK01/hrms-lite-backend.git
 cd hrms-lite-backend
@@ -72,7 +72,7 @@ npm run dev
 Frontend available at: http://localhost:5173
 
 ```
-## Assumptions & Limitations
+### Assumptions & Limitations
    - Single Administrator: The system is designed for use by a single admin; authentication and multi-user roles are currently out of scope.
    - Manual ID Management: Unique Employee IDs are expected to be managed and entered manually by the administrator.
    - Local Persistence: Data is stored using a local SQLite database file, which is ideal for lightweight management but not designed for high-concurrency enterprise use.
